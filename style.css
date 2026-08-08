@@ -1,0 +1,787 @@
+/* =========================================================
+   DŌ — зал традиционных тренировок
+   Дизайн-система: бумага васи + чернила сумиэ + печать хамко
+   ========================================================= */
+
+/* ---------- Токены (переменные) ---------- */
+:root {
+  /* Цвета */
+  --paper: #F1ECDF;        /* фон — цвет бумаги васи */
+  --paper-dark: #E7E0CE;   /* фон карточек, чуть темнее */
+  --ink: #1C1A16;          /* тёплый чёрный — основной текст */
+  --ink-soft: #57524A;     /* приглушённый текст */
+  --seal: #A6332A;         /* красный хамко — акцент №1 */
+  --seal-dark: #832620;
+  --indigo: #2F3B54;       /* индиго айдзомэ — акцент №2 */
+  --line: #C9C0A8;         /* тонкая линия, цвет волокна бумаги */
+  --paper-rgb: 241, 236, 223;
+
+  /* Типографика */
+  --font-display: "Noto Serif", "Noto Serif JP", serif;
+  --font-body: "Noto Sans", "Noto Serif JP", sans-serif;
+
+  /* Прочее */
+  --container: 1180px;
+  --radius: 2px;
+}
+
+/* ---------- Сброс базовых стилей ---------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+.wrap {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ---------- Общие текстовые элементы ---------- */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 18px;
+}
+
+.eyebrow.center {
+  justify-content: center;
+}
+
+.seal-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--seal);
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: 0.01em;
+  margin-bottom: 56px;
+}
+
+.section-title.center {
+  text-align: center;
+}
+
+/* Подчёркивание-мазок кисти: тонкая линия, "дорисовывающаяся" при скролле */
+.brush-underline {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 18px;
+}
+
+.brush-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 64px;
+  background: var(--seal);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.brush-underline.center::after {
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+}
+
+.brush-underline.in-view::after {
+  transform: scaleX(1);
+}
+
+.brush-underline.center.in-view::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* ---------- Кнопки ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 30px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.btn-seal {
+  background: var(--seal);
+  color: var(--paper);
+}
+
+.btn-seal:hover {
+  background: var(--seal-dark);
+}
+
+.btn-ghost {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.btn-ghost:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn-large {
+  padding: 18px 40px;
+  font-size: 15px;
+}
+
+/* ---------- Шапка ---------- */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: transparent;
+  transition: background 0.3s ease, border-color 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.site-header.scrolled {
+  background: rgba(var(--paper-rgb), 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom-color: var(--line);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 84px;
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-display);
+}
+
+.logo-kanji {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--seal);
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.nav {
+  display: flex;
+  gap: 36px;
+}
+
+.nav a {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--seal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.nav a:hover::after {
+  transform: scaleX(1);
+}
+
+.header-cta {
+  padding: 10px 22px;
+}
+
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.nav-toggle span {
+  width: 24px;
+  height: 2px;
+  background: var(--ink);
+}
+
+/* ---------- Хиро ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  min-height: 100vh;
+}
+
+.hero-panel {
+  position: relative;
+  background: var(--ink);
+  color: var(--paper);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 140px 64px 64px;
+  overflow: hidden;
+}
+
+.vertical-kanji {
+  position: absolute;
+  top: 100px;
+  right: 28px;
+  writing-mode: vertical-rl;
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  color: rgba(var(--paper-rgb), 0.28);
+}
+
+.hero-panel .eyebrow {
+  color: rgba(var(--paper-rgb), 0.75);
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 6vw, 84px);
+  font-weight: 900;
+  line-height: 1.02;
+  margin-bottom: 28px;
+}
+
+.hero-text {
+  max-width: 40ch;
+  color: rgba(var(--paper-rgb), 0.8);
+  margin-bottom: 40px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hero-panel .btn-ghost {
+  border-color: rgba(var(--paper-rgb), 0.6);
+  color: var(--paper);
+}
+
+.hero-panel .btn-ghost:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.hero-media {
+  position: relative;
+}
+
+.media-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.55) contrast(1.05);
+}
+
+/* Уголки-метки, как приводочные метки в печати */
+.frame-marks span {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(var(--paper-rgb), 0.7);
+}
+
+.frame-marks span:nth-child(1) { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+.frame-marks span:nth-child(2) { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+.frame-marks span:nth-child(3) { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+.frame-marks span:nth-child(4) { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+/* ---------- Философия ---------- */
+.philosophy {
+  padding: 120px 0;
+}
+
+.principles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.principle {
+  padding: 0 40px;
+  text-align: center;
+  border-left: 1px solid var(--line);
+}
+
+.principle:first-child {
+  border-left: none;
+}
+
+.principle-kanji {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 44px;
+  color: var(--seal);
+  margin-bottom: 18px;
+}
+
+.principle h3 {
+  font-family: var(--font-display);
+  font-size: 21px;
+  margin-bottom: 14px;
+}
+
+.principle p {
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
+/* ---------- Программы ---------- */
+.programs {
+  padding: 120px 0;
+  background: var(--paper-dark);
+}
+
+.program-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+.program-card {
+  position: relative;
+}
+
+.program-media {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  margin-bottom: 20px;
+  background: var(--line);
+}
+
+.program-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.6);
+  transition: filter 0.4s ease, transform 0.5s ease;
+}
+
+.program-card:hover .program-media img {
+  filter: grayscale(0);
+  transform: scale(1.04);
+}
+
+.program-kanji {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--seal);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: 17px;
+  border-radius: 50%;
+}
+
+.program-card h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.program-card p {
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+/* ---------- Тренеры ---------- */
+.trainers {
+  padding: 120px 0;
+}
+
+.trainer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+}
+
+.trainer-media {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  margin-bottom: 22px;
+  background: var(--line);
+}
+
+.trainer-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+  transition: filter 0.4s ease;
+}
+
+.trainer-card:hover .trainer-media img {
+  filter: grayscale(0);
+}
+
+.trainer-card h3 {
+  font-family: var(--font-display);
+  font-size: 19px;
+  margin-bottom: 6px;
+}
+
+.trainer-role {
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+/* ---------- Абонементы ---------- */
+.pricing {
+  padding: 120px 0;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.pricing .eyebrow {
+  color: rgba(var(--paper-rgb), 0.7);
+  justify-content: center;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.price-card {
+  border: 1px solid rgba(var(--paper-rgb), 0.2);
+  padding: 44px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.price-card--featured {
+  border-color: var(--seal);
+  background: rgba(166, 51, 42, 0.08);
+}
+
+.price-kanji {
+  font-family: var(--font-display);
+  font-size: 34px;
+  color: var(--seal);
+  margin-bottom: 14px;
+}
+
+.price-card h3 {
+  font-family: var(--font-display);
+  font-size: 19px;
+  margin-bottom: 18px;
+}
+
+.price-value {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 28px;
+}
+
+.price-value span {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(var(--paper-rgb), 0.6);
+}
+
+.price-list {
+  margin-bottom: 32px;
+  width: 100%;
+}
+
+.price-list li {
+  padding: 10px 0;
+  border-top: 1px solid rgba(var(--paper-rgb), 0.14);
+  font-size: 14px;
+  color: rgba(var(--paper-rgb), 0.85);
+}
+
+/* ---------- CTA-баннер ---------- */
+.cta-banner {
+  padding: 140px 0;
+  background: var(--paper-dark);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-kanji {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: 380px;
+  color: rgba(28, 26, 22, 0.04);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.cta-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
+
+.cta-banner h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 44px);
+  max-width: 16ch;
+  line-height: 1.2;
+}
+
+/* ---------- Футер ---------- */
+.site-footer {
+  background: var(--ink);
+  color: rgba(var(--paper-rgb), 0.85);
+  padding-top: 80px;
+}
+
+.footer-inner {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 60px;
+  border-bottom: 1px solid rgba(var(--paper-rgb), 0.14);
+}
+
+.logo-footer .logo-text,
+.logo-footer .logo-kanji {
+  color: var(--paper);
+}
+
+.footer-brand p {
+  margin-top: 16px;
+  font-size: 14px;
+  color: rgba(var(--paper-rgb), 0.6);
+}
+
+.footer-col h4 {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  color: rgba(var(--paper-rgb), 0.55);
+}
+
+.footer-col p {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.footer-col a:hover {
+  color: var(--seal);
+}
+
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 32px;
+  font-size: 13px;
+  color: rgba(var(--paper-rgb), 0.45);
+}
+
+.footer-seal {
+  font-family: var(--font-display);
+  color: var(--seal);
+  font-size: 16px;
+}
+
+/* ---------- Скролл-анимация появления ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================================================
+   Адаптивность
+   ========================================================= */
+
+@media (max-width: 1024px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-media {
+    height: 60vh;
+  }
+
+  .hero-panel {
+    padding: 120px 40px 60px;
+  }
+
+  .program-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .nav,
+  .header-cta {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: flex;
+  }
+
+  .nav.open {
+    display: flex;
+    position: absolute;
+    top: 84px;
+    left: 0;
+    right: 0;
+    background: var(--paper);
+    flex-direction: column;
+    padding: 24px 32px;
+    gap: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .principles {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .principle {
+    border-left: none;
+    border-top: 1px solid var(--line);
+    padding: 40px 20px 0;
+  }
+
+  .principle:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .trainer-grid {
+    grid-template-columns: 1fr;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-kanji {
+    font-size: 220px;
+  }
+}
+
+@media (max-width: 600px) {
+  .wrap {
+    padding: 0 20px;
+  }
+
+  .program-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .vertical-kanji {
+    display: none;
+  }
+}
+
+/* ---------- Уважение к настройкам пониженной анимации ---------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
